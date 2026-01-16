@@ -1,1 +1,815 @@
-# lnx
+საკითხი 1 შექმენით ყველა შესაძლო ორ ასო-ნიშნიანი დასახელების დირექტორიები, რომელთა დასახელებებიც თვლის თექვსმეტობითი სისტემის სიმბოლოების ყველა კომბინაციას წარმოადგენს. ოპერაცია შეასრულეთ შელში ერთი ბრძანებით! პასუხი: mkdir {0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f}{0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f} ||| mkdir {0..9,a..f}{0..9,a..f}
+
+საკითხი 2 დავუშვათ გაქვთ ბევრი flv, vob და ogg გაფართოების ვიდეო ფIლი ~/Videos/ დირექტორიაში. ამოარჩიეთ მათგან ის flv და ogg ფაილები (გაფართოწბა შესაძლებელია დიდი, [ატარა ან შერეული ასოებით იყოს მოცემული), რომელთა დასახელებაშიც ფიგურირებს ერთი ციფრი მაინც და რომლის ბოლო ასო-ნიშანიც N-დან R-მდეა. ოპერაცია შეასრულეთ შელში ერთი ბრძანებით! პასუხი: ls ~/Videos/ | grep -Ei '.*[0-9].*[N-R]\.(flv|ogg)$'
+
+საკითხი 3 ვთქვათ გაქვთ foo დასახელების დირექტორიაში bar ფაილი, რომელშიც შიგთავსად ჩაწერილია სხვა ფაილის სრული გზა. თავის მხრივ, ამ ფაილში ჩაწერილია სულ სხვა ფაილის სრული გზა. გამოიტანეთ ამ უკანასკნელის ზომა ეკრანზე. ოპერაცია შეასრულეთ შელში ერთი ბრძანებით მილით ან/და მილის გარეშე. პასუხი: du -b $(cat $(cat foo/bar)) ||| cat foo/bar | xargs cat | xargs du -b
+
+საკითხი 4 მოძებნეთ ყველა ფაილი, რომლებიც წაიკითხეს ბოლო ორი საათის განმავლობაში. პასუხი: find / -type f -amin -120
+
+საკითხი 5 აგვისტოს თვეში ყოველი შაბათი-კვირის ღამის საათებში (00:00-06:00) ყოველი 15 წუთის ინტერვალში დაითვალეთ XYZ მომხმარებლის მიერ გაშვებული პროცესების რაოდენობა და დააგროვეთ ეს მონაცემები /tmp/jan-ფაილში. პასუხი: */15 0-6 * 8 6,0 ps -u XYZ --no-headers | wc -l >> /tmp/jan (ეს ჩანაწერი უნდა მოთავსდეს crontab-ში)
+
+საკითხი 6 ვთქვათ გაქვთ ტექსტური ფაილი students.txt სადაც მოცემულია სტუდენტების სახელი, გვარი და უნივერსიტეტის (TSU, BTU, GTU ...) 3 სხვადასხვა სვეტში. დაარედაქტირეთ ეს ფაილი ისე, რომ მასში დარჩეს მხოლოდ TSU-ს სტუდენტეის სია, ხოლო ორიგინალი შიგთავსი შეინახეთ students.txt _orig ფაილში. ამოცანა შეასრულეთ ერთი ბრძანებით და ისიც, მხოლოდ sed-ით. პასუხი: sed -i_orig '/TSU/!d' students.txt
+
+საკითხი 7 შექმენით არქივის ფაილი archive_YYMMDD.tar, რომელშიც შევა $HOME დირექტორიის ყველა ფაილი. ამის შემდგომ, 2 საათსა და 20 წუთში წაშალეთ არქივიდან დირექტორია $HOME/tmp და არქივი შეკუმშეთ. პასუხი: tar -cf archive_$(date +%y%m%d).tar $HOME && echo "tar --delete -f archive_$(date +%y%m%d).tar $HOME/tmp && gzip archive_$(date +%y%m%d).tar" | at now + 140 minutes
+
+საკითხი 8 შექმენით toto ფაილი titi დირექტორიაში იმგვარად, რომ თქვენთვის შეუძლებელი იყოს toto-ს შიგთავსის ნახვა, მაგრამ შეგეძლოთ titi-ს შიგთავსის ნახვა. პასუხი: mkdir titi && touch titi/toto && chmod 400 titi && chmod 000 titi/toto (ან ფაილზე მხოლოდ chmod u-r titi/toto)
+
+საკითხი 9 გამოიტანეთ ის 10 პროცესი, რომელიც ოპერატიულ მეხსიერებას ყველაზე მეტად ტვირთავს მოცემულ მომენტში და თუ შეძლებთ, დათვალეთ ჯამურად რამდენ ბაიტს იკავებს ეს პროცესები მეხსიერებაში ერთი ბრძანებით. პასუხი: ps aux --sort=-%mem | head -n 11 | tail -n 10 | awk '{sum += $6} END {print "Total RSS (KB):", sum}'
+
+საკითხი 10 დაწერეთ ბრძანება, რომელიც აგენერირებს N ასო-ნიშნიან შემთხვევით პაროლს. პაროლი უნდა შეიცავდეს ციფრებს, ასოებს (დიდი და პატარა), პუნქტუაციის ნიშნებს და სხვა სპეციალურ სიმბოლოებს. პასუხი: tr -dc 'A-Za-z0-9[:punct:]' < /dev/urandom | head -c N (სადაც N სასურველი ციფრია)
+
+საკითხი 11 რას შეასრულებს შელის შემდეგი ბრძანება: wc tee | tee wc პასუხი: ● დაითვლის tee ფაილში ახალ ხაზზე გადასვლის, სიტყვისა და ბაიტების რაოდენობას და აკოპირებს მას wc ფაილში
+
+საკითხი 12 გამოიტანეთ toto ფაილის ის სტრიქონები, რომლებიც, სულ მცირე, N რაოდენობა სიმბოლოებისგან შედგება (grep ბრძანებით) პასუხი: grep ".\{N,\}" toto (სადაც N ციფრია)
+
+საკითხი 13 toto ფაილი დაყავით ზომის მიხედვით N თანაბარ (მიახლოებით) ნაწილებად და დანაყოფებს დაარქვით შემდეგნაირად part_aaa, part_aab, ... პასუხი: split -n N --additional-suffix=part_ toto part_ (ან split -n N toto part_)
+
+საკითხი 14 toto ფაილის შიგთავსს თავსართად დაამატეთ ხაზი, სადაც მოცემული იქნება მიმდინარე თარიღი და 3-5 ხაზებში მეორე შემხვედრი ციფრიდან დაწყებული, ყოველი ციფრი (ანუ, ხაზზე პირველის გარდა ყველა) მოათავსეთ ფრჩხილებში ისე, რომ toto-ს ფაილის ორიგინალი შიგთავსი შეინახოთ toto_orig ფაილში. (sed ბრძანებით) პასუხი: sed -i_orig "1i $(date)" toto && sed -i '4,6s/\([0-9]\)/(\1)/2g' toto (შენიშვნა: რადგან პირველ ხაზზე თარიღი დაემატა, ორიგინალი 3-5 ხაზები გახდა 4-6)
+
+საკითხი 15 რას შეასრულებს shell-ის შემდეგი ბრძანება: cat 1>2 2>1 cat პასუხი: ● cat ფაილის შიგთავსს ჩაწერს ფაილში 2 (სტანდარტულ შეცდომას კი გადაამისამართებს ფაილში სახელად "1")
+
+საკითხი 16 დავუშვათ $HOME დირექტორიაში გაქვთ toto ფაილი. აჩვენეთ, მისი ზუსტი ზომა ბაიტებში და ასევე, თუ რა ზომას იკავებს ეს ფაილი დისკზე. პასუხი: ls -l ~/toto (ზუსტი ზომა) და du -h ~/toto (ზომა დისკზე) ან ერთად: stat ~/toto
+
+საკითხი 17 შეუცვალეთ პრიორიტეტის მნიშვნელობა 15-ით იმ პროცესს, რომელიც ყველაზე მეტად ტვირთავს პროცესორს მიმდინარე მომენტში (ერთი ბრძანებით) პასუხი: renice -n 15 -p $(ps -eo pid --sort=-%cpu | sed -n '2p')
+
+საკითხი 18 Linux სისტემაში რომელია WYSIWYG (what you see is what you get) ტექსტური რედაქტორები? პასუხი: ▢ gedit ▢ notepad++ (შენიშვნა: დანარჩენები ან ტერმინალის ტექსტური რედაქტორებია, ან LaTeX-ის გარემო)
+
+საკითხი 19 წვდომის რომელი უფლებებია სამართლიანი /etc/shadow ფაილისთვის? პასუხი: ● -rw-r----- 1 root shadow 8598 oct. 27 2017 /etc/shadow
+
+საკითხი 20 ფაილის ბოლო მოდიფიკაციის ფროის (mtime) შესაცვლელად თქვენ შეგიძLიათ გამოიყენოთ შემდეგი ბრძანება: (რამდენიმე პასუხი) პასუხი: ▢ touch ▢ vi ▢ emacs
+
+---
+
+საკითხი 1 Starting next year, force user1, user2 and user3 to change their password if they are the sudo group members. პასუხი: for u in user1 user2 user3; do id -Gn $u | grep -q "\bsudo\b" && sudo chage -d 2027-01-01 $u; done (შენიშვნა: chage -d 0 აიძულებს მომენტალურ შეცვლას, ხოლო კონკრეტული თარიღის მითითება მომავალი წლის დასაწყისისთვისაა).
+
+საკითხი 2 Create directories named D1 and D2 in your home directory and copy all commands that have the SGID and/or SUID bit enabled into them. (with one command) პასუხი: mkdir -p ~/D1 ~/D2 && find /usr/bin /usr/sbin -type f \( -perm -4000 -o -perm -2000 \) -exec cp {} ~/D1/ \; -exec cp {} ~/D2/ \;
+
+საკითხი 3 Only print the PID and command name of processes whose names starts with <<c>>. (use awk) პასუხი: ps -eo pid,comm | awk '$2 ~ /^c/ {print $1, $2}'
+
+საკითხი 4 Output the content of the last column of the last line of the foobar file. (use awk) პასუხი: awk 'END {print $NF}' foobar
+
+საკითხი 5 Display lines with more than N characters. (use awk) პასუხი: awk 'length($0) > N' filename (სადაც N სასურველი რიცხვია)
+
+საკითხი 6 Identify the invalid UID filed of the file /etc/passwd and print the corresponding lines in the following form: <<Line #? ERROR UID?>> (use awk) პასუხი: awk -F: '$3 < 0 || $3 == "" {print "Line #" NR " ERROR UID " $3}' /etc/passwd (ვალიდური UID Linux-ში ჩვეულებრივ არაუარყოფითი მთელი რიცხვია).
+
+საკითხი 7 Let's say the variable n contains a number that represents the number of seconds since the unix epoch. Output the date after n seconds from the Unix epoch in the current terminal in the center in red and blinking format. პასუხი: n=123456789; text=$(date -d "@$n"); tput setaf 1; tput blink; printf "%*s\n" $((($(tput cols)+${#text})/2)) "$text"; tput sgr0
+
+საკითხი 8 Write a script that displays the flag of Georgia on the current terminal. პასუხი:
+
+Bash
+
+#!/bin/bash
+# მარტივი ვიზუალიზაცია ANSI ფერებით
+red='\e[41m'
+white='\e[47m'
+reset='\e[0m'
+for i in {1..3}; do echo -e "${white}      ${red}  ${white}            ${reset}"; done
+echo -e "${red}                    ${reset}"
+for i in {1..3}; do echo -e "${white}      ${red}  ${white}            ${reset}"; done
+საკითხი 9 Let's say you are a Linux server administrator... (დისკების დაყოფა, ფორმატირება, ქოტები და ბექაპები) პასუხი:
+
+დაყოფა და ფორმატირება: mkfs.ext4 -b 4096 -L დიდი /dev/sdb1 mkfs.ext4 -b 512 -L პატარა /dev/sdb2
+
+Mount და ოპციები /etc/fstab-ში: /dev/sdb1 /mnt/Data1 ext4 noexec,jqfmt=vfsv0,usrjquota=aquota.user 0 2 /dev/sdb2 /mnt/Data2 ext4 nosuid 0 2
+
+ლიმიტები (Inodes): პირველზე tune2fs -O quota და setquota -u user 0 1024 0 0 /mnt/Data1. მეორეზე tune2fs -l /dev/sdb2 | grep "Inode count" გვაჩვენებს მაქსიმუმს.
+
+ბექაპების სკრიპტი:
+
+Bash
+
+for f in ~/*.bak; do
+    orig="${f%.bak}"
+    if [ ! -e "$orig" ] || [ "$f" -nt "$orig" ]; then
+        read -p "Rename $f to $orig? (y/Y): " ans
+        [[ "$ans" == [yY] ]] && mv "$f" "$orig"
+    fi
+done
+საკითხი 10 Which of the following commands identifies the installation package that contains the /path/to/file file? პასუხი: ● dpkg -S /path/to/file
+
+საკითხი 11 To change the file's last modification time (mtime) you can use the following command: (several answers) პასუხი: (ეს კითხვა დუბლირებულია და პასუხები არ ემთხვევა კითხვას, თუმცა პაკეტის ძებნაზე სწორია:) ● apt-file search /path/to/file ● dpkg -S /path/to/file
+
+საკითხი 12 To change the file's last modification time (mtime) you can use the following command: (several answers) პასუხი: ▢ touch ▢ vi ▢ emacs
+
+საკითხი 13 Cat -E MyFile.txt command results in a $ at hte end of each line. What can you conclude? პასუხი: ● Lines in a text file end with the ASCII character LF
+
+საკითხი 14 Which of the following commands will list the packages containing "network" in theit description? პასუხი: ● apt-cache search network
+
+საკითხი 15 Which of the following commands will load the nvidia module with its dependencies? პასუხი: ● modprobe nvidia
+
+საკითხი 16 Write a script that displays the current time in the upper right corner of the terminal and dynamically updates it every second. პასუხი: while sleep 1; do tput sc; tput cup 0 $(($(tput cols)-8)); date +%H:%M:%S; tput rc; done &
+
+საკითხი 17 Which two files in the user's home directory are used to configure bash environment? პასუხი: ● .bashrc and .profile (ან ზოგ სისტემაში .bash_profile)
+
+საკითხი 18 Which sequence of steps best describes the boot process? პასუხი: ● POST, GRUB, Kernel, initial RAM disk, init (ან BIOS, GRUB, Kernel, initial RAM disk, init)
+
+
+---
+
+საკითხი 1 გამოიტანეთ foo და bar ფაილების ყველა სტრიქონი, რომელიც შეიცავს Tsu გამოსახულებას დიდი, პატარა ან შერეული ასოებით. (გამოიყენეთ მხოლოდ grep ბრძანება) პასუხი: grep -i "Tsu" foo bar
+
+საკითხი 2 foobar.txt ფაილში რამდენი ხაზი შეიცავს Tsu და TSU სიტყვას? (გამოიყენეთ მხოლოდ grep ბრძანება) პასუხი: grep -Ec "Tsu|TSU" foobar.txt
+
+საკითხი 3 foobar.txt ფაილში რამდენჯერ არის გამოყენებული Tsu ან TSU სიტყვა? (გამოიყენეთ მხოლოდ grep ბრძანება) პასუხი: grep -Eo "Tsu|TSU" foobar.txt | grep -c ""
+
+საკითხი 4 გამოიტანეთ foobar.txt ფაილის ის სტრიქონები, რომლებიც მხოლოდ N სიმბოლოსგან შედგება, სადაც N არის n ცვლადში ჩაწერილი რიცხვი. (გამოიყენეთ მხოლოდ grep ბრძანება) პასუხი: grep -E "^.{$n}$" foobar.txt
+
+საკითხი 5 გამოიტანეთ foobar.txt ფაილის სტრიქონები, რომლებიც შეიცავს შემდეგ გამოსახულებას '^(ifg){3,}[^0-9]*$'. (გამოიყენეთ მხოლოდ grep ბრძანება) პასუხი: grep -E '^(ifg){3,}[^0-9]*$' foobar.txt
+
+საკითხი 6 შეცვალეთ Windows სიტყვა Linux-ით foobar.txt ფაილის ყველა სტრიქონში. ყველგან გარდა 3-დან 7-მდე სტრიქონებისა. (გამოიყენეთ მხოლოდ sed ბრძანება) პასუხი: sed '3,7!s/Windows/Linux/g' foobar.txt
+
+საკითხი 7 წაშალეთ foobar.txt ფაილის ყველა ლუწი სტრიქონი. (გამოიყენეთ მხოლოდ sed ბრძანება) პასუხი: sed 'n;d' foobar.txt
+
+საკითხი 8 წაშალეთ foobar.txt ფაილის მე-N სიმბოლო ყველა სტრიქონზე, სადაც N არის n ცვლადში ჩაწერილი რიცხვი. (გამოიყენეთ მხოლოდ sed ბრძანება) პასუხი: sed -E "s/^(.{$((n-1))})./\1/" foobar.txt
+
+საკითხი 9 foobar.txt ფაილის ყველა სტრიქონზე ბოლოს გარდა, შეცვალეთ ლათინური ანბანის პატარა ასოები დიდით. (გამოიყენეთ მხოლოდ sed ბრძანება) პასუხი: sed '$!s/[a-z]/\U&/g' foobar.txt
+
+საკითხი 10 foobar.txt ფაილის შიგთავსს თავსართად დაამატეთ ხაზი, სადაც მოცემული იქნება მიმდინარე თარიღი და ყოველ ხაზში მესამე შემხვედრი ციფრი მოათავსეთ ბრჭყალებში ისე, რომ foobar.txt ფაილის ორიგინალი შიგთავსი შეინახოთ foobar.txt.bak ფაილში. (გამოიყენეთ მხოლოდ sed ბრძანება) პასუხი: sed -i.bak "1i $(date)" foobar.txt && sed -i '2,$s/[0-9]/"&"/3' foobar.txt (შენიშვნა: თარიღის დამატების გამო, ძველი ტექსტი იწყება მე-2 ხაზიდან, ამიტომ მესამე ციფრის ჩასმა ბრჭყალებში ხდება მე-2 ხაზიდან ბოლომდე).
+
+საკითხი 11 წაშალეთ foobar.txt ფაილის ბოლო სტრიქონი, თუ ის შეიცავს გამოსახულებას Windows ან windows. (გამოიყენეთ მხოლოდ sed ბრძანება) პასუხი: sed -E '$ { /[Ww]indows/d }' foobar.txt
+
+---
+
+საკითხი 1
+შექმენით თქვენს პირად დირექტორიაში არსებული ფაილების შეკუმშული (bzip2-ით) არქივი დასახელებით archive_YYMMDD.tbz2 $HOME/tmp დირექტორიის გარდა. პასუხი: tar --exclude="$HOME/tmp" -cjf archive_$(date +%y%m%d).tbz2 $HOME
+
+საკითხი 2
+დაამატეთ არსებულ archive_YYMMDD.tgz შეკუმშულ არქივს $HOME/Documents/ დირექტორია. პასუხი: gunzip archive_$(date +%y%m%d).tgz && tar -rf archive_$(date +%y%m%d).tar $HOME/Documents/ && gzip archive_$(date +%y%m%d).tar (შენიშვნა: შეკუმშულ არქივში პირდაპირ ფაილების დამატება შეუძლებელია, ამიტომ ჯერ ხდება დეკომპრესია, შემდეგ დამატება და კვლავ შეკუმშვა).
+
+საკითხი 3
+შეკუმშეთ $HOME/foobar.txt ფაილი და თან შეინახეთ მისი ორიგინალი ვერსია. პასუხი: gzip -k $HOME/foobar.txt ან bzip2 -k $HOME/foobar.txt (ალამი -k ნიშნავს keep - ორიგინალის შენარჩუნებას).
+
+საკითხი 4
+შეამოწმეთ არის თუ არა foobar.txt ფაილი archive_YYMMDD.tar არქივში განთავსებული. თუ კი გამოიტანეთ ეკრანზე მისი სახელი, თუ არა ეკრანზე დაწერეთ "foobar.txt არ არის არქივში". პასუხი: tar -tf archive_$(date +%y%m%d).tar foobar.txt > /dev/null 2>&1 && echo "foobar.txt" || echo "foobar.txt არ არის არქივში"
+
+საკითხი 5
+დააკოპირეთ $HOME/archive.tar არქივი $HOME/home დირექტორიაში და ამოაარქივეთ მხოლოდ .txt გაფართოების ფაილი. პასუხი: cp $HOME/archive.tar $HOME/home/ && tar -xf $HOME/home/archive.tar -C $HOME/home/ --wildcards "*.txt"
+
+საკითხი 6
+თუ archive_YYMMDD.tar.gz შეკუმშული არქივის ფაილის მთლიანობის ტესტი წარმატებით დასრულდა, აკოპირეთ ის $HOME/home დირექტორიაში, თუ არა, მაშინ წაშალეთ ის. პასუხი: gzip -t archive_$(date +%y%m%d).tar.gz && cp archive_$(date +%y%m%d).tar.gz $HOME/home/ || rm archive_$(date +%y%m%d).tar.gz
+
+საკითხი 7
+xz ბრძანება gzip-ზე ახალი ბრძანებაა... ნახეთ რა განსხვავებას მოგცემთ დროში xz და gzip ბრძანება? პასუხი: time gzip -c archive_$(date +%y%m%d).tar > test.gz && time xz -c archive_$(date +%y%m%d).tar > test.xz (ბრძანება time გამოიტანს რეალურ, მომხმარებლის და სისტემურ დროს თითოეული ოპერაციისთვის).
+
+საკითხი 8
+ვთქვათ foobar.txt.bz2 ფაილი foobar.txt ფაილის შეკუმშული ვერსიაა. მისი აღდგენის გარეშე მოძებნეთ რამდენი ხაზი შეიცავს 'TSU' გამოსახულების გამეორებას სულ მცირე სამჯერ მაინც. პასუხი: bzgrep -E '(TSU.*){3,}' foobar.txt.bz2 | wc -l
+
+საკითხი 9
+ახალი 2024 წლის დადგომისას 00:01-ზე თუ pts/0 ტერმინალი გახსნილი იქნება, მასზე დაიწეროს "Happy New Year!" (ascii art-ის გამოყენებით) პასუხი: 01 00 1 1 * [ -e /dev/pts/0 ] && figlet "Happy New Year!" > /dev/pts/0 (შენიშვნა: figlet გამოიყენება ASCII art-ისთვის. ჩანაწერი უნდა მოთავსდეს crontab-ში).
+
+საკითხი 10
+15 მაისიდან 7 ივნისამდე ყოველი დღე-ღამის ყოველ 5 საათში გამოთვალეთ XYZ მომხმარებლის პირადი დირექტორიის ზომა და დააგროვეთ ეს მონაცემები /tmp/XZYsize-ფაილში. პასუხი: 0 */5 15-31 5 * du -sh /home/XYZ >> /tmp/XZYsize 0 */5 1-7 6 * du -sh /home/XYZ >> /tmp/XZYsize (შენიშვნა: კრონში თვეების გადაბმა რთულია, ამიტომ იწერება ორი ხაზი: მაისის 15-დან ბოლომდე და ივნისის 1-დან 7-მდე).
+
+საკითხი 11
+ყოველდღე $HOME/root.txt ფაილში ჩაამატეთ / დირექტორიის დაკავებულობა შემდეგი ფორმატით: "მიმდინარე თარიღი: /-ის დაკავებულობის მონაცემები". პასუხი: 0 0 * * * echo "$(date): $(df -h / | tail -1 | awk '{print $3}')" >> $HOME/root.txt
+
+---
+
+საკითხი 1
+პირობა: Let's say you have a file named students.txt containing information about N students in the following format: student_name1, student_surname1, student_address1... Your task is to compile and store this information in a new file named students2.txt with the following format: student_name1 student_surname1:student_address1. Perform this operation using a single command. პასუხი: sed 'N;N;s/\n/ /;s/\n/:/' students.txt > students2.txt
+
+საკითხი 2
+პირობა: Create a text file named foobar.txt with three lines as an example. Add a Ascii Bell character at the beginning and end of the file, and insert a Carriage Return character in the middle of each line. Find a solution to view the full contents and identify the invisible characters. პასუხი:
+
+ფაილის შექმნა: echo -e "\aLine1\rMiddle\nLine2\rMiddle\nLine3\rMiddle\a" > foobar.txt
+
+ხილვა: cat -A foobar.txt (სადაც ^G არის Bell და ^M არის Carriage Return).
+
+საკითხი 3
+პირობა: Display the size of each directory within your Home directory individually, as well as the total size (with one command). პასუხი: du -sh $HOME/*/ $HOME
+
+საკითხი 4
+პირობა: Write a function that checks if your terminal supports 256 colors. If it does, clear the screen and display the text passed as an argument centered on the screen using the color specified by the "color" variable. პასუხი:
+
+Bash
+
+check_and_center() {
+    if [ "$(tput colors)" -eq 256 ]; then
+        clear
+        local text="$1"
+        local row=$(( $(tput lines) / 2 ))
+        local col=$(( ($(tput cols) - ${#text}) / 2 ))
+        tput setaf ${color:-1}
+        tput cup $row $col
+        echo "$text"
+        tput sgr0
+    fi
+}
+საკითხი 5
+პირობა: Write a script that displays the letters of all three Georgian alphabets. პასუხი:
+
+Bash
+
+#!/bin/bash
+echo "ასომთავრული: აბგდევზჱთიკლმნჲოპჟრსტჳუფქღყშჩცძწჭხჴჯჰჵ"
+echo "ნუსხური: ⴀⴁⴂⴃⴄⴅⴆⴇⴈⴉⴊⴋⴌⴍⴎⴏⴐⴑⴒⴓⴔⴕⴖⴗⴘⴙⴚⴛⴜⴝⴞⴟⴠⴡⴢ"
+echo "მხედრული: აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ"
+საკითხი 6
+პირობა: Write a script that displays current time in the top right corner of the terminal screeen and updates it dinamically every second. პასუხი: while true; do tput sc; tput cup 0 $(( $(tput cols) - 8 )); date +%H:%M:%S; tput rc; sleep 1; done &
+
+საკითხი 7
+პირობა: Write a script that generates the following menu and executes corresponding actions: 1) Sudo users, 2) Kernel version, 3) Modules count/size, 4) OS info, 5) Disk read speed, 6) Disk write speed, 7) CPU info, 8) Network info, 9) Exit. პასუხი:
+
+Bash
+
+#!/bin/bash
+select opt in "Sudo Users" "Kernel" "Modules" "OS" "ReadSpeed" "WriteSpeed" "CPU" "Net" "Exit"; do
+    case $opt in
+        "Sudo Users") grep '^sudo' /etc/group ;;
+        "Kernel") uname -a ;;
+        "Modules") lsmod | awk 'NR>1{c++;s+=$2}END{print c, s}' ;;
+        "OS") cat /etc/os-release ;;
+        "ReadSpeed") sudo hdparm -t /dev/sda ;;
+        "WriteSpeed") dd if=/dev/zero of=test bs=1G count=1 oflag=dsync ;;
+        "CPU") lscpu ;;
+        "Net") ip addr ;;
+        "Exit") exit ;;
+    esac
+done
+საკითხი 8
+პირობა: Write a script that does the same thing as the ipcalc command, meaning it takes an IP/mask as an argument and returns a network IP and broadcast. პასუხი: #!/bin/bash; ipcalc -n $1 | grep -E "Network|Broadcast"
+
+საკითხი 9
+პირობა: List the usernames whose interpreter is neither /bin/false nor /usr/sbin/nologin (awk). პასუხი: awk -F: '$7 !~ /(\/bin\/false|\/usr\/sbin\/nologin)$/ {print $1}' /etc/passwd
+
+საკითხი 10
+პირობა: Display all lines of the file toto that contains more than 4 columns (awk). პასუხი: awk 'NF > 4' toto
+
+საკითხი 11
+პირობა: Which information cannot be found in the /etc/passwd file? (multiple answers) პასუხი: ▢ User's password (ინახება /etc/shadow-ში) ▢ Account expiration date (ინახება /etc/shadow-ში) ▢ Last password change date (ინახება /etc/shadow-ში)
+
+საკითხი 12
+პირობა: Write a script that displays the flag of Georgia in color on the entire terminal. პასუხი:
+
+Bash
+
+#!/bin/bash
+W=$(tput cols); H=$(tput lines)
+tput setab 7; clear # თეთრი ფონი
+# წითელი ჯვარი
+tput setab 1
+for ((i=0; i<H; i++)); do tput cup $i $((W/2-1)); echo "    "; done
+for ((i=H/2-1; i<H/2+1; i++)); do tput cup $i 0; printf '%*s' "$W" ""; done
+tput sgr0; tput cup $H 0
+საკითხი 13
+პირობა: When editing a file with the vi program, ___, ___, ___, ... file's timestamp gets updated. პასუხი: იცვლება atime (წვდომა), mtime (მოდიფიკაცია) და ctime (სტატუსის შეცვლა).
+
+საკითხი 14
+პირობა: Which file contains the URLs of repositories required for apt-* commands? პასუხი: /etc/apt/sources.list
+
+საკითხი 15
+პირობა: Write a script that calculates the factorial of a given number using recursion and without recursion. Compare execution times. პასუხი:
+
+Bash
+
+# იტერაციული (უფრო სწრაფი)
+fact_iter() {
+  res=1
+  for ((i=1;i<=$1;i++)); do res=$(echo "$res*$i" | bc); done
+  echo $res
+}
+# რეკურსიული (ნელი)
+fact_rec() {
+  if [ $1 -le 1 ]; then echo 1; else
+    echo "$1 * $(fact_rec $(($1-1)))" | bc
+  fi
+}
+შენიშვნა: რეკურსია Shell-ში ძალიან ნელია "overhead"-ის გამო, იტერაციული bc-ით უფრო ოპტიმალურია დიდი რიცხვებისთვის.
+
+---
+
+
+1-3. ნავიგაცია (Path Manipulation)
+საკითხი 1: Let's say you are standing in the /home/user/Documents directory. Go to the /usr/share/common-licenses directory. Use both, the absolute and the relative path. პასუხი: * Absolute: cd /usr/share/common-licenses
+
+Relative: cd ../../../usr/share/common-licenses
+
+საკითხი 2: Suppose you are standing in the /usr/local/bin directory. Go to the /usr/share/common-licenses directory. Use both, the absolute and the relative path. პასუხი: * Absolute: cd /usr/share/common-licenses
+
+Relative: cd ../../share/common-licenses
+
+საკითხი 3: Suppose you are standing in some directory. Go to your home directory using both, absolute and relative path. პასუხი: * Absolute: cd /home/username (ან cd ~)
+
+Relative: cd (არგუმენტის გარეშე ბრძანება ყოველთვის $HOME-ში ბრუნდება).
+
+4-7. ფაილების შექმნა (Special Characters & Expansion)
+საკითხი 4: Create files with the following names: "name", "name surname", "name \ surname", "'name" surname' "," '".", "' / " პასუხი: touch "name" "name surname" "name \ surname" "'name\" surname' " " '\"." " ' / \"
+
+საკითხი 5: Create all possible two-character filenames with A and B symbols. პასუხი: touch {A,B}{A,B}
+
+საკითხი 6: Create all possible four-character filenames with A, B and C symbols. პასუხი: touch {A,B,C}{A,B,C}{A,B,C}{A,B,C}
+
+საკითხი 7: In the directory “test”, create all possible tree-character with , $, @ and ' symbols. პასუხი: mkdir test && cd test && touch {'\','$',@,"'"}{'','$',@,"'"}{'\','$',@,"'"}\
+
+8-12. მასიური შექმნა და Brace Expansion
+საკითხი 8: Create 10000 html extension files in the HTML directory. Do the operation in the Shell with one command! პასუხი: mkdir HTML && touch HTML/{1..10000}.html
+
+საკითხი 9: Create filenames "name1", "name2" and "name3" with and without the "txt" file extension. Do the operation in the Shell with one command! პასუხი: touch name{1,2,3}{.txt,}
+
+საკითხი 10: Create filenames "name1", "name2" and "name3" with the "txt" file extension. The file extension should be given in all character case variants - txt, txT,... TXT. პასუხი: touch name{1,2,3}.{t,T}{x,X}{t,T}
+
+საკითხი 11: Create tree-character directory names where the first character is from a to z, the second one is from A to Z, and the third one is a digit. პასუხი: mkdir {a..z}{A..Z}{0..9}
+
+საკითხი 12: Create directories of all possible two-character names with the hexadecimal characters. პასუხი: mkdir {0..9,a..f}{0..9,a..f}
+
+13. კომპლექსური ფილტრაცია
+საკითხი 13: Create all possible three-character directory name variants with digits. In each directory create one, two, three and four-character filenames using symbols: A, B and C. Then display: A) 01234... B) All two-character in dirs without "5" C) One and three-character not containing "B" in dirs with only "1", "3", "9". პასუხი: mkdir {0..9}{0..9}{0..9} && touch {0..9}{0..9}{0..9}/{A,B,C}{,A,B,C}{,,A,B,C}{,,,A,B,C}
+
+A) ls 01234/CB (პირობითი გზა)
+
+B) ls [!5][!5][!5]/??
+
+C) ls [139][139][139]/[!B] [139][139][139]/[!B][!B][!B]
+
+14-17. ფაილების შერჩევა (Wildcards & Case Sensitivity)
+საკითხი 14-15: Select jpg and png files containing at least one digit and whose first letter is between D to P (case insensitive extension). პასუხი: ls [D-P]*[0-9]*.[jJ][pP][gG] [D-P]*[0-9]*.[pP][nN][gG]
+
+საკითხი 16: Select flv and ogg files (case insensitive) containing at least one digit and whose last letter is between K to Q. პასუხი: ls *[0-9]*[K-Q].{flv,flV,fLv,fLV,Flv,FlV,FLv,FLV,ogg,ogG,oGg,oGG,Ogg,OgG,OGg,OGG}
+
+საკითხი 17: Select seven-character .pdf files and .txt files containing at least 2 digits and first letter between C to R. პასუხი: ls ???????.pdf [C-R]*[0-9]*[0-9]*.txt
+
+18. ხის სტრუქტურის აღწერა
+საკითხი 18: Describe graphically the following tree structure: /usr/{share/{common-licenses/{,L}GPL-?,doc/HOWTO},{local/{bin,lib},lib/{gimp/?.?*, emacs /[0-9]*.[1-9]ac}} პასუხი:
+
+/usr დირექტორია იყოფა share, local და lib ქვე-დირექტორიებად, სადაც თითოეული შეიცავს სპეციფიკურ ქვესისტემებს (ლიცენზიები, დოკუმენტაცია, ბინარული ფაილები).
+
+19-21. ფაილის შიგთავსის გამოყენება
+საკითხი 19-21: Display content or size of a file whose path is stored inside another file (nested). პასუხი: * Content (No pipe): cat $(cat toto)
+
+Size (No pipe): du -b $(cat $(cat toto))
+
+With pipe: cat toto | xargs cat | xargs du -b
+
+22-24. ლოგიკური ოპერატორები
+საკითხი 22: Create toto if it does not exist. პასუხი: [ -f toto ] || touch toto
+
+საკითხი 23: Create toto if no titi exists (silently). პასუხი: [ ! -f titi ] && touch toto 2>/dev/null
+
+საკითხი 24: If foobar exists, create toto, else create titi. პასუხი: [ -f foobar ] && touch toto 2>/dev/null || touch titi 2>/dev/null
+
+25-31. გადამისამართება (Redirection)
+საკითხი 29-30: Append list to file and display on screen simultaneously. პასუხი: ls /etc/*.conf | tee -a ~/list_conf.txt
+
+საკითხი 31: Redirect etc list to one file and .conf list to another. პასუხი: ls /etc > list_etc.txt && ls /etc/*.conf > list_etc_conf.txt
+
+32-35. არითმეტიკა და ცვლადები
+საკითხი 32: Calculate (n1+(n2*n3))/n2 from file contents. პასუხი: echo "($(cat n1.txt)+($(cat n2.txt)*$(cat n3.txt)))/$(cat n2.txt)" | bc
+
+საკითხი 33: Calculate π with first 100 decimals. პასუხი: echo "scale=100; 4*a(1)" | bc -l
+
+36-38. Shell Invitation (PS1)
+საკითხი 38: Colored invitation: "My processes number is - N $". პასუხი: export PS1="\[\e[34m\]My processes number is - \$(ps -u \$USER | wc -l) \$ \[\\e[m\]"\
+
+39-42. ტესტური კითხვები
+საკითხი 39: cat <ls> cat — B) Concatenates the "<ls>" and the "cat" files. საკითხი 41: wc file.txt | tee wc — A) Prints counts and copies them to filename ”wc”. საკითხი 42: 2>&1 1>file vs 1>file 2>&1 — არა, მეორე ვარიანტი ორივე ნაკადს ფაილში გზავნის, პირველი მხოლოდ stdout-ს.
+
+43-46. გარემო ცვლადები
+საკითხი 43-45: Export behavior and sub-shells. პასუხი: export საჭიროა, რომ ცვლადი გადაეცეს ქვე-პროცესებს (bash). export -n კი ამ თვისებას აუქმებს.
+
+47-50. წაშლა და პრივილეგიები
+საკითხი 49: Remove all except "r" starts. პასუხი: rm -rf $HOME/tmp/[!r]*
+
+საკითხი 50: Empty directory including hidden files (safely). პასუხი: rm -rf ~/tmp/{.[^.],.??*,*}
+
+51. ფაილის დაცარიელება (Emptying a File)
+საკითხი: Which of the following commands empty the $HOME/tmpfile file (multiple choice): პასუხი: სწორია A, E, F, G, H.
+
+A, F, G: სტანდარტული გადამისამართების მეთოდებია.
+
+E: echo -n არ ამატებს ახალ ხაზს, ამიტომ ფაილი 0 ბაიტი ხდება.
+
+H: truncate -s 0 სპეციალური ბრძანებაა ფაილის ზომის შესაცვლელად.
+
+52-61. ფაილების ძებნა (Find Command)
+საკითხი 52: Find all .html files in your HOME directory and redirect the list to the fichier.html file. პასუხი: find $HOME -name "*.html" > fichier.html
+
+საკითხი 53: Find all files whose contents were last modified 2 days ago. პასუხი: find . -mtime 2
+
+საკითხი 54: Find all files modified 2 days ago, size between 23 B and 145 B. პასუხი: find . -mtime 2 -size +23c -size -145c
+
+საკითხი 59: Find all empty regular type files. პასუხი: find . -type f -empty
+
+საკითხი 61: Find all directories starting with “a" OR non-directory files ending with "k". პასუხი: find . \( -type d -name "a*" \) -o \( ! -type d -name "*k" \)
+
+62-69. უფლებები და ზომები (Permissions)
+საკითხი 62: Show the difference: find . -size between n, -n, + n. პასუხი: n — ზუსტად n ზომის, -n — n-ზე ნაკლები, +n — n-ზე მეტი.
+
+საკითხი 66: Find all directories with sticky bit access (777). პასუხი: find . -type d -perm 1777
+
+საკითხი 68: Find all files that have an active SUID bit. პასუხი: find / -perm /4000
+
+70-74. ფაილების მართვა
+საკითხი 70-71: Find all .mp4 or .avi (case insensitive) files larger than 100 MB and delete them. პასუხი: find $HOME -type f -size +100M \( -iname "*.mp4" -o -iname "*.avi" \) -delete
+
+საკითხი 72: Delete all empty directories in your home directory. პასუხი: find $HOME -type d -empty -delete
+
+75-81. პროცესების მართვა (Processes)
+საკითხი 78-79: Sort all processes by CPU and Memory usage. პასუხი: ps aux --sort=-%cpu (CPU) და ps aux --sort=-%mem (Memory).
+
+საკითხი 80: "ps -aux" is different from "ps aux"? პასუხი: დიახ, ps aux (ტირეს გარეშე) არის BSD სტილი და უფრო ხშირად გამოიყენება ყველა პროცესის სანახავად. ps -aux POSIX სტანდარტით სხვაგვარად ინტერპრეტირდება.
+
+82-86. Top და სიგნალები
+საკითხი 82: Run top (batch mode) and save first 10 processes in 10p.txt. პასუხი: top -b -n 1 | head -n 17 | tail -n 10 > 10p.txt
+
+საკითხი 86: Kill firefox if it is running, without displaying errors. პასუხი: pkill -f firefox 2>/dev/null
+
+87-93. თარიღი და დრო (Date Command)
+საკითხი 88: Which day of the week was 01/01/2001. პასუხი: date -d "2001-01-01" +%A
+
+საკითხი 93: Display seconds elapsed since the creation of UNIX (Unix Epoch). პასუხი: date +%s
+
+94-100. ტექსტური დამუშავება და ფაილების გაერთიანება
+საკითხი 94: Display 5-10 lines and 2-5 columns of file toto and redirect to toto_YYMMDDHHMM. პასუხი: awk 'NR>=5 && NR<=10 {print $2, $3, $4, $5}' toto > toto_$(date +%y%m%d%H%M)
+
+საკითხი 96: Find duplicate lines in toto and display count. პასუხი: sort toto | uniq -d -c
+
+საკითხი 99: Combine surname, name, brdate, place files into students.txt. პასუხი: paste surname.txt name.txt brdate.txt place.txt > students.txt
+
+საკითხი 100: Compile all student information from $HOME/student directory into one file. პასუხი: cat $HOME/student/* > student.txt
+
+101-104. ფაილების დამუშავება და ჩამონათვალი
+101. Join two files: f1.txt (1st field) and f2.txt (3rd field) are the same. join -1 1 -2 3 <(sort f1.txt) <(sort f2.txt)
+
+102. Show all .jpg and .png file sizes in your home directory. find ~ -type f \( -name "*.jpg" -o -name "*.png" \) -exec du -h {} +
+
+103. Show all .jpg and .png files total size in your home. find ~ -type f \( -name "*.jpg" -o -name "*.png" \) -exec du -ch {} + | tail -n 1
+
+104. List files in one column. ls -1
+
+105-109. არქივაცია (Tar, Gzip, Bzip2)
+105. Create archive_YYMMDD.tar containing all files from home. tar -cf archive_$(date +%y%m%d).tar ~
+
+106. Create compressed (gzip) archive_YYMMDD.tgz. tar -czf archive_$(date +%y%m%d).tgz ~
+
+107. Create compressed (bzip2) archive_YYMMDD.tbz2. tar -cjf archive_$(date +%y%m%d).tbz2 ~
+
+108. Create archive, then in 5h 15m add $HOME/tmp. tar -cf archive_$(date +%y%m%d).tar ~/Documents && echo "tar -rf archive_$(date +%y%m%d).tar ~/tmp" | at now + 315 minutes
+
+109. Create archive.tar, next day at 21:00 delete $HOME/tmp and compress (LZ). tar -cf archive.tar ~ && echo "tar --delete -f archive.tar home/user/tmp && gzip archive.tar" | at 21:00 tomorrow
+
+110-113. დაგეგმილი დავალებები (Cron & At)
+110. Copy passwd daily at 20:30 (except weekends) & count XYZ processes in Jan.
+
+30 20 * * 1-5 cp /etc/passwd ~/tmp/passwd
+
+*/10 0-6 * 1 6 ps -u XYZ | wc -l >> /tmp/jan
+
+111. From Dec 25 to Jan 2, every 15 mins, count total processes. */15 25-31 12 * * ps aux | wc -l >> /tmp/hollydays */15 1-2 1 * * ps aux | wc -l >> /tmp/hollydays
+
+112. First day of month at 15:48, backup home as YYMMDDHHMM.tar. 48 15 1 * * tar -cf /backups/$(date +\%y\%m\%d\%H\%M).tar ~
+
+114-119. ფაილური უფლებები (Permissions)
+114. Create toto in $HOME/tmp (Read only). touch ~/tmp/toto && chmod 400 ~/tmp/toto
+
+115. Read/Modify but cannot delete. touch ~/tmp/toto && chmod 600 ~/tmp/toto && sudo chattr +i ~/tmp/toto (ან Sticky bit დირექტორიაზე).
+
+116. Read/Delete but not modify. touch ~/tmp/toto && chmod 400 ~/tmp/toto (წაშლა დამოკიდებულია დირექტორიის უფლებაზე).
+
+117. Visualize toto but not titi content. mkdir ~/titi && touch ~/titi/toto && chmod 711 ~/titi
+
+121-124. ფარული ფაილები
+121-123. Count hidden files/dirs.
+
+ფაილები: find ~ -maxdepth 1 -type f -name ".*" | wc -l
+
+დირექტორიები: find ~ -maxdepth 1 -type d -name ".*" | wc -l
+
+131-165. Grep ბრძანებები (ტექსტის ძებნა)
+131-133. Find "Linux" (Case sensitive/insensitive).
+
+grep "Linux" toto
+
+grep -i "Linux" toto
+
+135. Find Linux AND linux (both in same line). grep "Linux" toto | grep "linux"
+
+139-140. Context search (N lines before/after). grep -n -C $n "Linux" toto
+
+148. Lines containing ONLY numbers. grep -E "^[0-9]+$" toto
+
+150. Find specific IP addresses. grep -E "192\.168\.2\.105|217\.147\.231\.59" toto
+
+165. Find real IP addresses (Regex). grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" toto
+
+166-221. Sed ბრძანებები (ტექსტის რედაქტირება)
+166. Replace /bin/sh with /bin/bash. sed -i 's|/bin/sh|/bin/bash|g' /etc/passwd
+
+167-169. Display/Delete specific rows (5 to 9).
+
+ჩვენება: sed -n '5,9p' /etc/passwd
+
+წაშლა: sed '5,9d' /etc/passwd
+
+172. Display only first column (split by :). sed 's/:.*//' /etc/passwd
+
+185-186. Replace Windows with Linux in rows 3-7 (or except them).
+
+sed '3,7s/Windows/Linux/g' toto
+
+sed '3,7!s/Windows/Linux/g' toto
+
+194. Delete first N characters on every line. sed -E "s/^.{$n}//" toto
+
+210-211. Delete even/odd lines.
+
+ლუწი: sed 'n;d' toto
+
+კენტი: sed '1~2d' toto
+
+214. Swap case (Upper to Lower and vice versa). sed 'y/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz/' toto
+
+219. Enclose uppercase in parentheses. sed 's/[A-Z]/(&)/g' toto
+
+221. Replace leading spaces with "+". sed 's/^ /+/' toto
+
+222. Write a shell script that takes a sequence of files as arguments and moves them to the $HOME/files/ directory.Bash#!/bin/bash
+mkdir -p "$HOME/files"
+mv "$@" "$HOME/files/"
+223. Write a shell script that copies a file given as the first argument to the file given as the second argument.Bash#!/bin/bash
+cp "$1" "$2"
+224. Write a shell script that generates a menu with 3 arguments. if the first argument is selected - the script should show the disk free space size in MB. If second - the script should display $USER home directory size in KB. If third – exit the script.Bash#!/bin/bash
+select opt in "Disk Free (MB)" "Home Size (KB)" "Exit"; do
+    case $REPLY in
+        1) df -m / | awk 'NR==2 {print $4 " MB"}' ;;
+        2) du -sk "$HOME" ;;
+        3) exit ;;
+    esac
+done
+225. Write a script that generates the following menu: A) Disk free space (only physical), B) $HOME Directory Size, C) Number of .conf files in /etc, D) The largest file size in $HOME.Bash#!/bin/bash
+echo "A) Physical Disk Free Space"
+echo "B) Home Directory Size"
+echo "C) .conf files in /etc"
+echo "D) Largest regular file in $HOME"
+read -p "Select: " opt
+case $opt in
+    A) df -h -x tmpfs -x devtmpfs ;;
+    B) du -sh "$HOME" ;;
+    C) find /etc -maxdepth 1 -name "*.conf" | wc -l ;;
+    D) find "$HOME" -type f -exec du -h {} + | sort -rh | head -1 ;;
+esac
+226. Show How many color is supported in your terminal and display all color code combinations.Bash#!/bin/bash
+tput colors
+for i in {0..255}; do
+    tput setaf $i
+    echo -n "Color $i "
+done
+tput sgr0; echo
+227. Write a script that calculates the values of the functions $f(x)=x^2+15x-2$ for all $x=[-10,10]$ and display the sum of their values.Bash#!/bin/bash
+sum=0
+for ((x=-10; x<=10; x++)); do
+    val=$(( x*x + 15*x - 2 ))
+    sum=$(( sum + val ))
+done
+echo "Sum: $sum"
+228. Write a script that shows the sum of all odd numbers from 1 to 50,000.Bash#!/bin/bash
+sum=0
+for ((i=1; i<=50000; i+=2)); do sum=$((sum + i)); done
+echo $sum
+229. Write a script that shows the sum of all third numbers from 1 to 2023.Bash#!/bin/bash
+sum=0
+for ((i=1; i<=2023; i+=3)); do sum=$((sum + i)); done
+echo $sum
+230. Write a script that takes a sequence of numbers as an argument and displays the sum.Bash#!/bin/bash
+sum=0
+for n in "$@"; do sum=$((sum + n)); done
+echo $sum
+231. Write a script that takes a sequence of numbers as an argument and selects the largest of them.Bash#!/bin/bash
+max=$1
+for n in "$@"; do [ $n -gt $max ] && max=$n; done
+echo $max
+232. Write a script that takes a number as an argument and display its factorial.Bash#!/bin/bash
+res=1
+for ((i=1; i<=$1; i++)); do res=$((res * i)); done
+echo $res
+233. Write a script that takes a number as an argument and displays the same number of Fibonacci numbers.Bash#!/bin/bash
+a=0; b=1
+for ((i=0; i<$1; i++)); do
+    echo -n "$a "
+    fn=$((a + b))
+    a=$b; b=$fn
+done
+echo
+234. Delete all your files from /tmp directory.find /tmp -user $USER -type f -delete235. Delete all backup files in $HOME.find $HOME -name "*.bak" -o -name "*~" -delete236. Compare the number of processes running by root and $USER.Bash#!/bin/bash
+r=$(ps -u root | wc -l)
+u=$(ps -u $USER | wc -l)
+echo "Root: $r, $USER: $u"
+[ $r -gt $u ] && echo "Root has more" || echo "$USER has more"
+237-238. Compare files by modification/access time.Bash# Modification time (237)
+[ "$1" -nt "$2" ] && echo "$1 is newer" || echo "$2 is newer"
+# Access time (238) - Requires 'stat'
+[ $(stat -c %X "$1") -gt $(stat -c %X "$2") ] && echo "$1 accessed later"
+239. Check if two files passed as arguments to the script share the same inode.Bash#!/bin/bash
+[ $(stat -c %i "$1") -eq $(stat -c %i "$2") ] && echo "Same inode"
+240. Check if you are the owner of the file and if you belong to its group.Bash#!/bin/bash
+[ -O "$1" ] && echo "Owner" && [ -G "$1" ] && echo "Belong to group"
+241. Print n, n-1... 1, BOOM !!!Bash#!/bin/bash
+for ((i=$1; i>=1; i--)); do echo -n "$i, "; sleep 1; done
+echo "BOOM !!!"
+242. Show the day of the week that was in 2000-2023 on the current date.Bash#!/bin/bash
+day_month=$(date +%m-%d)
+for y in {2000..2023}; do date -d "$y-$day_month" +%A; done
+243. Lists names of files in $HOME/files and directories in $HOME/dirs recursively.ls -R $HOME/files $HOME/dirs244-245. Find last modified/read file.Modified: find ~ -type f -printf '%T+ %p\n' | sort -r | head -1Read: find ~ -type f -printf '%A+ %p\n' | sort -r | head -1246. Copy shell script names and contents to $HOME/scripts.Bash#!/bin/bash
+mkdir -p ~/scripts
+for f in *.sh; do
+    echo "Script Name: $f" >> ~/scripts/all.txt
+    cat "$f" >> ~/scripts/all.txt
+done
+247. Guess character type.Bash#!/bin/bash
+read -n 1 char
+case $char in
+    [0-9]) echo "Number" ;;
+    [a-z]) echo "Lowercase" ;;
+    [A-Z]) echo "Uppercase" ;;
+    *) echo "Other" ;;
+esac
+248. Save paths of png, jpg, bmp and show elapsed time.Bash#!/bin/bash
+start=$(date +%s)
+find ~ -name "*.png" > ~/files_png.txt
+find ~ -name "*.jpg" > ~/files_jpg.txt
+find ~ -name "*.bmp" > ~/files_bmp.txt
+echo "Took $(( $(date +%s) - start )) seconds"
+249. Show sizes of tar.gz, conf, html, sh files.du -ch $HOME/**/*.{tar.gz,conf,html,sh} | grep total**250. Convert regular filenames to uppercase in $HOME/tmp.**for f in ~/tmp/*; do [ -f "$f" ] && mv "$f" "${f^^}"; done\251. Convert contents of files to uppercase.for f in ~/tmp/*; do [ -f "$f" ] && sed -i 's/.*/\U&/' "$f"; done252. Check if contents of two files are identical.diff -q "$1" "$2" > /dev/null && echo "Identical"253. Check if filename is a script.file "$1" | grep -q "script" && echo "It is a script"254-255. PIDs and Command names.PID to Name: ps -p "$@" -o comm=Name to PID: pidof "$1"256. Invert a string.echo "$1" | rev257. Count vowels.echo "$1" | grep -oi '[aeiou]' | wc -l258-259. Custom basename/dirname.Basename: echo "${1##*/}"Dirname: echo "${1%/*}"260. Remove last directory in PATH.export PATH=${PATH%:*}261. Rename .bak files if original is missing or older.Bash#!/bin/bash
+for f in *.bak; do
+    orig="${f%.bak}"
+    if [ ! -f "$orig" ] || [ "$f" -nt "$orig" ]; then
+        read -p "Rename $f? (y/n): " ans
+        [[ $ans == [yY]* ]] && mv "$f" "$orig"
+    fi
+done
+262. Print M lines starting from Nth row of filename.sed -n "$1,$(( $1 + $2 - 1 ))p" "$3"
+
+264. Write a script that prints Pascal numbers.
+პასკალის სამკუთხედის თითოეული რიცხვი მიიღება მის ზემოთ მდებარე ორი რიცხვის შეკრებით.
+
+Bash
+
+#!/bin/bash
+read -p "Enter number of rows: " rows
+for ((i=0; i<rows; i++)); do
+    coef=1
+    # ჰარები ვიზუალიზაციისთვის
+    for ((space=1; space<rows-i; space++)); do echo -n "  "; done
+    for ((j=0; j<=i; j++)); do
+        printf "%4d" $coef
+        coef=$((coef * (i - j) / (j + 1)))
+    done
+    echo
+done
+265. Pascal numbers: even = space, odd = asterisk. What pattern will you get?
+თუ პასკალის სამკუთხედში ლუწ რიცხვებს გამოვტოვებთ და კენტებს ვარსკვლავით ჩავანაცვლებთ, მივიღებთ ცნობილ ფრაქტალს — სერპინსკის სამკუთხედს (Sierpinski Triangle).
+
+Bash
+
+#!/bin/bash
+read -p "Enter number of rows: " rows
+for ((i=0; i<rows; i++)); do
+    coef=1
+    for ((space=1; space<rows-i; space++)); do echo -n " "; done
+    for ((j=0; j<=i; j++)); do
+        if [ $((coef % 2)) -ne 0 ]; then echo -n "* "; else echo -n "  "; fi
+        coef=$((coef * (i - j) / (j + 1)))
+    done
+    echo
+done
+266. 100 Doors Problem
+ეს არის კლასიკური მათემატიკური ამოცანა. კარი ღია დარჩება მხოლოდ იმ შემთხვევაში, თუ მასზე "შეხება" (toggle) მოხდა კენტი რაოდენობით. ეს ხდება მხოლოდ იმ ნომრებზე, რომლებიც სრულ კვადრატებს წარმოადგენენ (1, 4, 9, 16, 25, 36, 49, 64, 81, 100).
+
+Bash
+
+#!/bin/bash
+# 0 - closed, 1 - open
+declare -a doors
+for ((i=1; i<=100; i++)); do doors[$i]=0; done
+
+for ((pass=1; pass<=100; pass++)); do
+    for ((i=pass; i<=100; i+=pass)); do
+        doors[$i]=$((1 - doors[$i]))
+    done
+    # ვიზუალიზაცია თითოეული იტერაციისთვის (სიმბოლურად)
+    echo -n "Pass $pass: "
+    for ((d=1; d<=100; d++)); do
+        if [ ${doors[$d]} -eq 1 ]; then echo -n "O"; else echo -n "."; fi
+    done
+    echo
+done
+
+echo -e "\nFinal open doors (Perfect Squares):"
+for ((i=1; i<=100; i++)); do
+    if [ ${doors[$i]} -eq 1 ]; then echo -n "$i "; fi
+done
+echo
+267. 15-character random password
+ეს სკრიპტი იყენებს /dev/urandom-ს უსაფრთხო და შემთხვევითი სიმბოლოების გენერაციისთვის, რომელიც მოიცავს ციფრებს, ასოებს და სპეციალურ სიმბოლოებს.
+
+Bash
+
+#!/bin/bash
+# LC_ALL=C საჭიროა სიმბოლოების სწორი ფილტრაციისთვის
+cat /dev/urandom | tr -dc 'A-Za-z0-9!@#$%^&*()_+=-' | head -c 15
+echo
+
+
+ფიგურის ნახატების სკრიპტები
+
+გთავაზობთ სურათზე მოცემული ფიგურების დასახატად საჭირო Bash სკრიპტებს. თითოეული მათგანი იყენებს ციკლებს (for loops) სიმბოლოების სწორი რაოდენობით გამოსატანად.
+
+ა) და ბ) რიცხვების პირამიდები
+ეს სკრიპტები ბეჭდავენ ციფრებს ზრდადობის მიხედვით.
+
+ა)
+
+Bash
+
+for ((i=1; i<=5; i++)); do
+    for ((j=1; j<=i; j++)); do
+        echo -n "$i"
+    done
+    echo
+done
+ბ)
+
+Bash
+
+for ((i=1; i<=5; i++)); do
+    for ((j=1; j<=i; j++)); do
+        echo -n "$j"
+    done
+    echo
+done
+გ) კიბისებრი სტრუქტურა
+იყენებს ვერტიკალურ ხაზებს (|) და ქვედა ტირეს (_).
+
+Bash
+
+for ((i=1; i<=5; i++)); do
+    for ((j=1; j<i; j++)); do
+        echo -n "| "
+    done
+    echo "|_"
+done
+დ) და ე) ვარსკვლავების სამკუთხედები
+დ) მარტივი სამკუთხედი
+
+Bash
+
+for ((i=1; i<=5; i++)); do
+    for ((j=1; j<=i; j++)); do
+        echo -n "* "
+    done
+    echo
+done
+ე) გვერდული სამკუთხედი
+
+Bash
+
+# ზედა ნაწილი
+for ((i=1; i<=5; i++)); do
+    for ((j=1; j<=i; j++)); do echo -n "* "; done
+    echo
+done
+# ქვედა ნაწილი
+for ((i=4; i>=1; i--)); do
+    for ((j=1; j<=i; j++)); do echo -n "* "; done
+    echo
+done
+ვ) რიცხვების ცენტრალური პირამიდა
+აქ საჭიროა ჰარების (spaces) გამოთვლა ტექსტის გასაცენტრებლად.
+
+Bash
+
+rows=9
+for ((i=1; i<=rows; i++)); do
+    # ჰარები ცენტრირებისთვის
+    for ((s=i; s<=rows; s++)); do echo -n " "; done
+    # ციფრების ბეჭდვა
+    for ((j=1; j<=i; j++)); do echo -n "$i "; done
+    echo
+done
+ზ) და თ) წერტილების პირამიდა და ალმასი
+ზ) წერტილების სამკუთხედი
+
+Bash
+
+rows=10
+for ((i=1; i<=rows; i++)); do
+    for ((s=i; s<=rows; s++)); do echo -n " "; done
+    for ((j=1; j<=i; j++)); do echo -n ". "; done
+    echo
+done
+თ) ალმასი (Diamond)
+
+Bash
+
+n=7
+# ზედა ნაწილი
+for ((i=1; i<=n; i++)); do
+    for ((s=i; s<=n; s++)); do echo -n " "; done
+    for ((j=1; j<=i; j++)); do echo -n ". "; done
+    echo
+done
+# ქვედა ნაწილი
+for ((i=n-1; i>=1; i--)); do
+    for ((s=i; s<=n; s++)); do echo -n " "; done
+    for ((j=1; j<=i; j++)); do echo -n ". "; done
+    echo
+done
